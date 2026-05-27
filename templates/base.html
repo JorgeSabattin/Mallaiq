@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Malla Stress{% endblock %} — MallaIQ</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeede9;
+  --t1: #1a1a18; --t2: #5a5a56; --t3: #9a9a94;
+  --b2: rgba(0,0,0,.10); --b3: rgba(0,0,0,.06);
+  --accent: #1a5fa5; --accent-bg: #e6f0fb;
+  --danger: #c0392b; --danger-bg: #fdecea;
+  --success: #2a9d5c; --success-bg: #e6f4ec;
+  --warn: #f4a922; --warn-bg: #fef7e6;
+  --r: 8px; --rl: 12px;
+  --sidebar-w: 220px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1a; --bg2: #252523; --bg3: #2e2e2b;
+    --t1: #e8e8e2; --t2: #a0a09a; --t3: #606060;
+    --b2: rgba(255,255,255,.10); --b3: rgba(255,255,255,.06);
+    --accent-bg: #0c2a4a;
+  }
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+       background: var(--bg3); color: var(--t1); min-height: 100vh;
+       display: flex; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar-w); min-height: 100vh; background: var(--bg);
+  border-right: .5px solid var(--b2); display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; z-index: 50;
+}
+.sidebar-logo {
+  padding: 18px 16px 14px;
+  border-bottom: .5px solid var(--b3);
+  font-size: 15px; font-weight: 600; color: var(--t1);
+  display: flex; align-items: center; gap: 8px;
+}
+.sidebar-logo span { font-size: 11px; color: var(--t3); font-weight: 400; }
+.sidebar-nav { flex: 1; padding: 10px 8px; }
+.nav-label {
+  font-size: 9.5px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .6px; color: var(--t3); padding: 10px 8px 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12.5px; color: var(--t2); padding: 7px 10px;
+  border-radius: var(--r); text-decoration: none; margin-bottom: 1px;
+  transition: all .1s;
+}
+.nav-item:hover, .nav-item.active {
+  background: var(--accent-bg); color: var(--accent);
+}
+.nav-item i { font-size: 16px; }
+.sidebar-footer {
+  padding: 12px 16px 16px;
+  border-top: .5px solid var(--b3);
+  font-size: 11px; color: var(--t2);
+}
+.sidebar-footer strong { display: block; font-size: 12px; color: var(--t1); }
+
+/* ── Main content ── */
+.content { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; }
+.topbar {
+  background: var(--bg); border-bottom: .5px solid var(--b2);
+  padding: 12px 24px; display: flex; align-items: center;
+  justify-content: space-between;
+}
+.topbar h1 { font-size: 16px; font-weight: 500; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.page-body { padding: 22px 24px 40px; }
+
+/* ── Cards ── */
+.card {
+  background: var(--bg); border: .5px solid var(--b2);
+  border-radius: var(--rl); padding: 18px 20px; margin-bottom: 14px;
+}
+.card-title {
+  font-size: 13px; font-weight: 500; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 7px;
+}
+.card-title i { font-size: 16px; color: var(--t3); }
+
+/* ── Grid de carreras ── */
+.carreras-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.carrera-card {
+  background: var(--bg); border: .5px solid var(--b2);
+  border-radius: var(--rl); padding: 16px 18px;
+  text-decoration: none; color: inherit;
+  transition: box-shadow .12s, transform .12s;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.carrera-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,.10); transform: translateY(-1px);
+}
+.carrera-card-name { font-size: 13.5px; font-weight: 500; }
+.carrera-card-meta { font-size: 11px; color: var(--t2); }
+.carrera-card-stats {
+  display: flex; gap: 8px; margin-top: 4px;
+}
+.mini-stat {
+  flex: 1; background: var(--bg2); border-radius: var(--r);
+  padding: 7px 10px;
+}
+.mini-stat-val { font-size: 18px; font-weight: 600; }
+.mini-stat-lbl { font-size: 9.5px; color: var(--t2); }
+
+/* ── Botones ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; padding: 7px 14px;
+  border-radius: var(--r); cursor: pointer; border: .5px solid var(--b2);
+  text-decoration: none; font-family: inherit; transition: all .1s;
+}
+.btn-primary { background: var(--t1); color: var(--bg); border-color: transparent; }
+.btn-primary:hover { opacity: .85; }
+.btn-secondary { background: transparent; color: var(--t1); }
+.btn-secondary:hover { background: var(--bg2); }
+.btn-danger { background: var(--danger-bg); color: var(--danger); border-color: #f0a09a; }
+.btn-sm { font-size: 11px; padding: 5px 11px; }
+
+/* ── Formulario de subida ── */
+.upload-zone {
+  border: 1.5px dashed var(--b2); border-radius: var(--rl);
+  padding: 28px 20px; text-align: center; cursor: pointer;
+  transition: border-color .12s, background .12s;
+  background: var(--bg2);
+}
+.upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: var(--accent-bg); }
+.upload-zone i { font-size: 28px; color: var(--t3); margin-bottom: 8px; display: block; }
+.upload-zone p { font-size: 12px; color: var(--t2); }
+.upload-zone input[type=file] { display: none; }
+.upload-filename { font-size: 11px; color: var(--accent); margin-top: 6px; font-weight: 500; }
+
+/* ── Form fields ── */
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 11.5px; font-weight: 500; color: var(--t2); display: block; margin-bottom: 5px; }
+.form-input {
+  width: 100%; padding: 8px 11px; border: .5px solid var(--b2);
+  border-radius: var(--r); font-size: 13px; font-family: inherit;
+  background: var(--bg); color: var(--t1); transition: border-color .1s;
+}
+.form-input:focus { outline: none; border-color: var(--accent); }
+
+/* ── Tabla de análisis ── */
+.table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.table th {
+  font-size: 10.5px; font-weight: 500; color: var(--t2);
+  text-align: left; padding: 7px 12px; border-bottom: 1px solid var(--b2);
+  text-transform: uppercase; letter-spacing: .4px;
+}
+.table td { padding: 10px 12px; border-bottom: .5px solid var(--b3); vertical-align: middle; }
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: var(--bg2); }
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 500; padding: 2px 8px;
+  border-radius: 20px;
+}
+.badge-green  { background: var(--success-bg); color: var(--success); }
+.badge-yellow { background: var(--warn-bg); color: #7a4f00; }
+.badge-red    { background: var(--danger-bg); color: var(--danger); }
+.badge-gray   { background: var(--bg2); color: var(--t2); }
+
+/* ── Alertas ── */
+.alert { padding: 10px 14px; border-radius: var(--r); font-size: 12px; margin-bottom: 12px;
+         display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+.alert-success { background: var(--success-bg); color: #1a5e35; border: .5px solid #a8d5b8; }
+.alert-error   { background: var(--danger-bg);  color: #7f1d1d; border: .5px solid #f0a09a; }
+.alert-info    { background: var(--accent-bg);  color: #1a3a6e; border: .5px solid #a8ccf0; }
+
+/* ── Grid 2 cols ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 700px) { .g2 { grid-template-columns: 1fr; } }
+
+/* ── Responsive sidebar ── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .content { margin-left: 0; }
+}
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <i class="ti ti-chart-grid-dots" style="font-size:20px;color:var(--accent)"></i>
+    MallaIQ
+    <span>v1.0</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Principal</div>
+    <a href="{% url 'malla:dashboard' %}"
+       class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+      <i class="ti ti-layout-dashboard"></i> Dashboard
+    </a>
+
+    {% if request.user.organization %}
+    <div class="nav-label" style="margin-top:8px">Carreras</div>
+    {% for c in sidebar_carreras %}
+    <a href="{% url 'malla:carrera_detail' c.pk %}" class="nav-item">
+      <i class="ti ti-school"></i> {{ c.nombre|truncatechars:24 }}
+    </a>
+    {% endfor %}
+    {% endif %}
+
+    {% if request.user.es_admin_saas %}
+    <div class="nav-label" style="margin-top:8px">Administración</div>
+    <a href="/admin/" class="nav-item">
+      <i class="ti ti-settings"></i> Admin Django
+    </a>
+    {% endif %}
+  </nav>
+  <div class="sidebar-footer">
+    <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+    {{ request.user.organization.nombre|default:"Sin organización" }}<br>
+    <a href="{% url 'accounts:logout' %}" style="color:var(--t3);font-size:10.5px;
+       text-decoration:none;margin-top:4px;display:inline-block">
+      <i class="ti ti-logout" style="font-size:12px"></i> Cerrar sesión
+    </a>
+  </div>
+</aside>
+
+<!-- Content -->
+<div class="content">
+  <!-- Topbar -->
+  <div class="topbar">
+    <h1>{% block page_title %}{% endblock %}</h1>
+    <div class="topbar-actions">
+      {% block topbar_actions %}{% endblock %}
+    </div>
+  </div>
+
+  <!-- Messages -->
+  {% if messages %}
+  <div style="padding:12px 24px 0">
+    {% for m in messages %}
+    <div class="alert alert-{% if m.tags == 'error' %}error{% elif m.tags == 'success' %}success{% else %}info{% endif %}">
+      <i class="ti ti-{% if m.tags == 'error' %}alert-triangle{% elif m.tags == 'success' %}check{% else %}info-circle{% endif %}"
+         style="font-size:15px;flex-shrink:0"></i>
+      {{ m }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Page body -->
+  <div class="page-body">
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

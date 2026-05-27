@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Subir Excel — {{ carrera.nombre }}{% endblock %}
+{% block page_title %}Nuevo análisis · {{ carrera.nombre }}{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'malla:carrera_detail' carrera.pk %}" class="btn btn-secondary btn-sm">
+  <i class="ti ti-arrow-left"></i> Volver
+</a>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:680px">
+  <form method="POST" enctype="multipart/form-data" id="uploadForm">
+    {% csrf_token %}
+
+    <!-- Período -->
+    <div class="card">
+      <div class="card-title"><i class="ti ti-calendar"></i> Período académico</div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Período (ej: 202510, 202620)</label>
+        <input type="text" name="periodo" class="form-input"
+               placeholder="202510" maxlength="10" required
+               style="max-width:200px">
+      </div>
+    </div>
+
+    <!-- Archivos -->
+    <div class="card">
+      <div class="card-title"><i class="ti ti-file-spreadsheet"></i> Archivos Excel</div>
+      <div class="g2">
+
+        <!-- Malla -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">1. Malla curricular</label>
+          <div class="upload-zone" id="zona-malla"
+               onclick="document.getElementById('id_malla').click()">
+            <i class="ti ti-table"></i>
+            <p>Clic para seleccionar</p>
+            <p style="font-size:10px;margin-top:3px;color:var(--t3)">
+              Malla_ICF_UNAB12210.xlsx
+            </p>
+            <div class="upload-filename" id="nombre-malla"></div>
+          </div>
+          <input type="file" id="id_malla" name="archivo_malla"
+                 accept=".xlsx,.xls" required
+                 onchange="mostrarNombre(this,'nombre-malla','zona-malla')">
+        </div>
+
+        <!-- Actas -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">2. Actas / tasas de reprobación</label>
+          <div class="upload-zone" id="zona-actas"
+               onclick="document.getElementById('id_actas').click()">
+            <i class="ti ti-file-analytics"></i>
+            <p>Clic para seleccionar</p>
+            <p style="font-size:10px;margin-top:3px;color:var(--t3)">
+              ICF_Varas_Malla_..._proyección.xlsx
+            </p>
+            <div class="upload-filename" id="nombre-actas"></div>
+          </div>
+          <input type="file" id="id_actas" name="archivo_actas"
+                 accept=".xlsx,.xls" required
+                 onchange="mostrarNombre(this,'nombre-actas','zona-actas')">
+        </div>
+      </div>
+    </div>
+
+    <!-- Formato esperado -->
+    <div class="card">
+      <div class="card-title"><i class="ti ti-info-circle"></i> Formato de archivos</div>
+      <div class="g2" style="font-size:11px;color:var(--t2)">
+        <div>
+          <strong style="display:block;margin-bottom:4px">malla.xlsx — Hoja 1</strong>
+          <code style="display:block;background:var(--bg2);padding:8px;border-radius:6px;line-height:1.8;font-size:10.5px">
+            Col 0: Semestre<br>
+            Col 1: Código<br>
+            Col 2: Asignatura<br>
+            Col 9: Créditos UNAB<br>
+            Col 10: Prerrequisitos
+          </code>
+        </div>
+        <div>
+          <strong style="display:block;margin-bottom:4px">actas.xlsx — Hoja 1</strong>
+          <code style="display:block;background:var(--bg2);padding:8px;border-radius:6px;line-height:1.8;font-size:10.5px">
+            Fila 0: Título<br>
+            Fila 1: Subtítulo<br>
+            Fila 2: Encabezados<br>
+            Col: %reprobación 202510<br>
+            Col: %reprobación 202410
+          </code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón -->
+    <div style="display:flex;gap:10px;align-items:center">
+      <button type="submit" class="btn btn-primary" id="btnSubmit">
+        <i class="ti ti-cpu"></i> Generar análisis
+      </button>
+      <span id="procesando" style="display:none;font-size:12px;color:var(--t2)">
+        <i class="ti ti-loader-2" style="animation:spin 1s linear infinite;display:inline-block"></i>
+        Procesando…
+      </span>
+    </div>
+  </form>
+</div>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<script>
+function mostrarNombre(input, labelId, zonaId) {
+  const name = input.files[0]?.name || "";
+  document.getElementById(labelId).textContent = name;
+  document.getElementById(zonaId).style.borderColor = name ? "var(--success)" : "";
+}
+document.getElementById("uploadForm").addEventListener("submit", () => {
+  document.getElementById("btnSubmit").disabled = true;
+  document.getElementById("procesando").style.display = "inline-flex";
+});
+
+// Drag & drop
+["zona-malla","zona-actas"].forEach(id => {
+  const zona = document.getElementById(id);
+  zona.addEventListener("dragover", e => { e.preventDefault(); zona.classList.add("drag"); });
+  zona.addEventListener("dragleave", () => zona.classList.remove("drag"));
+  zona.addEventListener("drop", e => {
+    e.preventDefault(); zona.classList.remove("drag");
+    const inputId = id === "zona-malla" ? "id_malla" : "id_actas";
+    const labelId = id === "zona-malla" ? "nombre-malla" : "nombre-actas";
+    const input = document.getElementById(inputId);
+    if (e.dataTransfer.files.length) {
+      const dt = new DataTransfer();
+      dt.items.add(e.dataTransfer.files[0]);
+      input.files = dt.files;
+      mostrarNombre(input, labelId, id);
+    }
+  });
+});
+</script>
+{% endblock %}

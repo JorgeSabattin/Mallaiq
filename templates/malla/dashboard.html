@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard — {{ org.nombre }}{% endblock %}
+
+{% block content %}
+
+{% if not carreras %}
+<div class="card" style="text-align:center;padding:40px 20px">
+  <i class="ti ti-school" style="font-size:40px;color:var(--t3);display:block;margin-bottom:12px"></i>
+  <p style="font-size:14px;font-weight:500;margin-bottom:6px">No hay carreras configuradas</p>
+  <p style="font-size:12px;color:var(--t2);margin-bottom:16px">
+    Un administrador debe crear las carreras de tu institución.
+  </p>
+  {% if request.user.es_admin_saas %}
+  <a href="/admin/malla/carrera/add/" class="btn btn-primary">
+    <i class="ti ti-plus"></i> Crear carrera
+  </a>
+  {% endif %}
+</div>
+
+{% else %}
+
+<!-- Resumen rápido -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px">
+  <div class="card" style="margin:0">
+    <div class="mini-stat-lbl">Carreras activas</div>
+    <div class="mini-stat-val">{{ carreras|length }}</div>
+  </div>
+  <div class="card" style="margin:0">
+    <div class="mini-stat-lbl">Análisis generados</div>
+    <div class="mini-stat-val">
+      {% with total=0 %}
+        {% for c in carreras %}{{ c.analisis.count }}{% endfor %}
+      {% endwith %}
+      —
+    </div>
+  </div>
+  <div class="card" style="margin:0">
+    <div class="mini-stat-lbl">Organización</div>
+    <div class="mini-stat-val" style="font-size:13px;font-weight:500;margin-top:4px">
+      {{ org.nombre }}
+    </div>
+  </div>
+</div>
+
+<!-- Carreras -->
+<div class="card-title" style="margin-bottom:10px">
+  <i class="ti ti-school"></i> Carreras
+</div>
+<div class="carreras-grid">
+  {% for carrera in carreras %}
+  {% with ultimo=ultimos|get_item:carrera.pk %}
+  <a href="{% url 'malla:carrera_detail' carrera.pk %}" class="carrera-card">
+    <div>
+      <div class="carrera-card-name">{{ carrera.nombre }}</div>
+      <div class="carrera-card-meta">
+        {{ carrera.codigo }} · {{ carrera.campus }} · {{ carrera.n_semestres }} semestres
+      </div>
+    </div>
+    {% if ultimo %}
+    <div class="carrera-card-stats">
+      <div class="mini-stat">
+        <div class="mini-stat-val" style="color:{% if ultimo.pct_promedio >= 85 %}var(--success){% elif ultimo.pct_promedio >= 70 %}var(--warn){% else %}var(--danger){% endif %}">
+          {{ ultimo.pct_promedio }}%
+        </div>
+        <div class="mini-stat-lbl">Aprobación prom.</div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-val" style="color:{% if ultimo.n_criticas == 0 %}var(--success){% else %}var(--danger){% endif %}">
+          {{ ultimo.n_criticas }}
+        </div>
+        <div class="mini-stat-lbl">Críticas</div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-val" style="font-size:12px;margin-top:3px">{{ ultimo.periodo }}</div>
+        <div class="mini-stat-lbl">Último período</div>
+      </div>
+    </div>
+    {% else %}
+    <div style="font-size:11px;color:var(--t3)">
+      <i class="ti ti-upload" style="font-size:13px"></i> Sin análisis aún
+    </div>
+    {% endif %}
+  </a>
+  {% endwith %}
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Análisis {{ analisis.periodo }} — {{ analisis.carrera.nombre }}{% endblock %}
+{% block page_title %}{{ analisis.carrera.nombre }} · {{ analisis.periodo }}{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'malla:descargar_html' analisis.pk %}" class="btn btn-secondary btn-sm">
+  <i class="ti ti-download"></i> Descargar HTML
+</a>
+<a href="{% url 'malla:carrera_detail' analisis.carrera.pk %}" class="btn btn-secondary btn-sm">
+  <i class="ti ti-arrow-left"></i> Volver
+</a>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+.dashboard-frame {
+  width: 100%;
+  height: calc(100vh - 110px);
+  border: none;
+  border-radius: var(--rl);
+  background: var(--bg);
+}
+.page-body { padding: 12px 24px 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Meta rápida -->
+<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+  <div class="badge badge-gray">
+    <i class="ti ti-calendar" style="font-size:12px"></i> {{ analisis.periodo }}
+  </div>
+  <div class="badge badge-gray">
+    <i class="ti ti-list" style="font-size:12px"></i> {{ analisis.n_asignaturas }} asignaturas
+  </div>
+  <div class="badge {% if analisis.pct_promedio >= 85 %}badge-green{% elif analisis.pct_promedio >= 70 %}badge-yellow{% else %}badge-red{% endif %}">
+    <i class="ti ti-chart-bar" style="font-size:12px"></i> {{ analisis.pct_promedio }}% prom.
+  </div>
+  {% if analisis.n_criticas > 0 %}
+  <div class="badge badge-red">
+    <i class="ti ti-alert-triangle" style="font-size:12px"></i> {{ analisis.n_criticas }} críticas
+  </div>
+  {% else %}
+  <div class="badge badge-green">
+    <i class="ti ti-check" style="font-size:12px"></i> Sin asignaturas críticas
+  </div>
+  {% endif %}
+  <div class="badge badge-gray" style="margin-left:auto">
+    <i class="ti ti-user" style="font-size:12px"></i>
+    {{ analisis.creado_por.get_full_name|default:analisis.creado_por.username|default:"Sistema" }}
+    · {{ analisis.creado_en|date:"d/m/Y H:i" }}
+  </div>
+</div>
+
+<!-- Dashboard embebido en iframe con srcdoc -->
+<iframe class="dashboard-frame"
+        srcdoc="{{ analisis.html_resultado|escapejs }}"
+        title="Dashboard estrés de malla {{ analisis.periodo }}">
+</iframe>
+{% endblock %}

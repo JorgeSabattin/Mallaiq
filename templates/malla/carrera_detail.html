@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}{{ carrera.nombre }}{% endblock %}
+{% block page_title %}{{ carrera.nombre }}{% endblock %}
+{% block topbar_actions %}
+{% if request.user.puede_subir %}
+<a href="{% url 'malla:subir_excel' carrera.pk %}" class="btn btn-primary btn-sm">
+  <i class="ti ti-upload"></i> Nuevo análisis
+</a>
+{% endif %}
+<a href="{% url 'malla:dashboard' %}" class="btn btn-secondary btn-sm">
+  <i class="ti ti-arrow-left"></i> Volver
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Info carrera -->
+<div class="card">
+  <div class="g2">
+    <div>
+      <div style="font-size:11px;color:var(--t2);margin-bottom:2px">Código</div>
+      <div style="font-size:14px;font-weight:500">{{ carrera.codigo }}</div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--t2);margin-bottom:2px">Campus</div>
+      <div style="font-size:14px;font-weight:500">{{ carrera.campus|default:"—" }}</div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--t2);margin-bottom:2px">Semestres</div>
+      <div style="font-size:14px;font-weight:500">{{ carrera.n_semestres }}</div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--t2);margin-bottom:2px">Umbrales</div>
+      <div style="font-size:12px">
+        <span style="color:#2a9d5c">≥{{ carrera.umbral_verde }}%</span> ·
+        <span style="color:#f4a922">≥{{ carrera.umbral_amarillo }}%</span> ·
+        <span style="color:#c0392b">&lt;{{ carrera.umbral_naranjo }}%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Historial de análisis -->
+<div class="card">
+  <div class="card-title">
+    <i class="ti ti-history"></i> Historial de análisis
+  </div>
+  {% if analisis %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Período</th>
+        <th>Estado</th>
+        <th>Asignaturas</th>
+        <th>Aprobación prom.</th>
+        <th>Críticas</th>
+        <th>Creado por</th>
+        <th>Fecha</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in analisis %}
+      <tr>
+        <td><strong>{{ a.periodo }}</strong></td>
+        <td>
+          {% if a.estado == 'listo' %}
+            <span class="badge badge-green"><i class="ti ti-check"></i> Listo</span>
+          {% elif a.estado == 'procesando' %}
+            <span class="badge badge-yellow"><i class="ti ti-loader-2"></i> Procesando</span>
+          {% else %}
+            <span class="badge badge-red"><i class="ti ti-x"></i> Error</span>
+          {% endif %}
+        </td>
+        <td>{{ a.n_asignaturas }}</td>
+        <td>
+          <strong style="color:{% if a.pct_promedio >= 85 %}#2a9d5c{% elif a.pct_promedio >= 70 %}#f4a922{% else %}#c0392b{% endif %}">
+            {{ a.pct_promedio }}%
+          </strong>
+        </td>
+        <td>
+          {% if a.n_criticas > 0 %}
+            <span style="color:#c0392b;font-weight:500">{{ a.n_criticas }}</span>
+          {% else %}
+            <span style="color:#2a9d5c">0</span>
+          {% endif %}
+        </td>
+        <td style="color:var(--t2)">{{ a.creado_por.get_full_name|default:a.creado_por.username|default:"—" }}</td>
+        <td style="color:var(--t2);white-space:nowrap">{{ a.creado_en|date:"d/m/Y H:i" }}</td>
+        <td>
+          {% if a.listo %}
+          <div style="display:flex;gap:5px">
+            <a href="{% url 'malla:ver_analisis' a.pk %}" class="btn btn-secondary btn-sm">
+              <i class="ti ti-eye"></i> Ver
+            </a>
+            <a href="{% url 'malla:descargar_html' a.pk %}" class="btn btn-secondary btn-sm">
+              <i class="ti ti-download"></i>
+            </a>
+          </div>
+          {% elif a.estado == 'error' %}
+          <span style="font-size:10px;color:var(--t3)" title="{{ a.mensaje_error }}">
+            <i class="ti ti-info-circle"></i> {{ a.mensaje_error|truncatechars:40 }}
+          </span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="text-align:center;padding:30px;color:var(--t3)">
+    <i class="ti ti-file-off" style="font-size:32px;display:block;margin-bottom:8px"></i>
+    <p style="font-size:12px">No hay análisis generados para esta carrera.</p>
+    {% if request.user.puede_subir %}
+    <a href="{% url 'malla:subir_excel' carrera.pk %}"
+       class="btn btn-primary btn-sm" style="margin-top:12px;display:inline-flex">
+      <i class="ti ti-upload"></i> Subir primer análisis
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
