@@ -1,5 +1,4 @@
 django>=4.2,<5.0
-pandas>=2.0
 openpyxl>=3.1
 whitenoise>=6.6
 gunicorn>=21.0
