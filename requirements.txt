@@ -1,7 +1,9 @@
 django>=4.2,<5.0
 pandas>=2.0
 openpyxl>=3.1
-whitenoise>=6.6        # servir archivos estáticos en producción
-gunicorn>=21.0         # servidor WSGI producción
-python-decouple>=3.8   # variables de entorno (.env)
-pillow>=10.0           # imágenes (logos institucionales)
+whitenoise>=6.6
+gunicorn>=21.0
+python-decouple>=3.8
+pillow>=10.0
+dj-database-url>=2.1
+psycopg2-binary>=2.9
